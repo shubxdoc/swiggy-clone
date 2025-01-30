@@ -47,7 +47,7 @@ const Cart = () => {
         <div className="flex gap-4 mb-5">
           <img
             src={
-              item.itemAttribute.vegClassifier == "VEG"
+              item?.itemAttribute?.vegClassifier == "VEG" || item?.isVeg
                 ? "https://www.pngkey.com/png/detail/261-2619381_chitr-veg-symbol-svg-veg-and-non-veg.png"
                 : "https://www.pngkey.com/png/full/245-2459071_non-veg-icon-non-veg-symbol-png.png"
             }

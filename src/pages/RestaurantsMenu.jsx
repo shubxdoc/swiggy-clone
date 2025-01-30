@@ -35,12 +35,14 @@ const RestaurantsMenu = () => {
   const fetchMenu = async () => {
     const restaurantId = id?.split("rest")[1];
 
-    if (!restaurantId) {
+    if (!restaurantId && !id) {
       console.error("Invalid restaurant ID format.");
       return;
     }
 
-    const baseURL = `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${restaurantId}&catalog_qa=undefined&submitAction=ENTER`;
+    const baseURL = `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${
+      restaurantId || id
+    }&catalog_qa=undefined&submitAction=ENTER`;
 
     try {
       const response = await fetch(baseURL);
@@ -65,7 +67,7 @@ const RestaurantsMenu = () => {
 
       setMenuData(actualMenu);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
