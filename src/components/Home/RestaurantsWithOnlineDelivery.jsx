@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
 import { useSelector } from "react-redux";
 import { FilterButton } from "../Common";
 
-const RestaurantsWithOnlineDelivery = () => {
-  const [data, setData] = useState([]);
-  const [title, setTitle] = useState("");
-
-  const { coordinates } = useSelector((state) => state.coordinateSlice);
+const RestaurantsWithOnlineDelivery = ({ data, title }) => {
   const { filterValue } = useSelector((state) => state.filterSlice);
 
   const filterData = data.filter((item) => {
@@ -26,32 +21,6 @@ const RestaurantsWithOnlineDelivery = () => {
         return;
     }
   });
-
-  const { lat, lng } = coordinates;
-
-  const fetchData = async () => {
-    const baseURL = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
-
-    try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
-
-      // console.log(result?.data?.cards);
-
-      setTitle(result?.data?.cards[2]?.card?.card?.title);
-
-      setData(
-        result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
-          ?.restaurants || []
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [coordinates, filterValue]);
 
   return (
     <div>
