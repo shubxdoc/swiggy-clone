@@ -21,7 +21,7 @@ const FilterButton = ({ btnText }) => {
   return (
     <button
       onClick={handleClick}
-      className={`py-2 px-3 font-semibold hover:bg-gray-50 text-gray-700 rounded-3xl text-sm border shadow-md flex items-center justify-between gap-3 ${
+      className={`p-2 md:py-2 md:px-3 font-semibold hover:bg-gray-50 text-gray-700 rounded-3xl text-xs md:text-sm border shadow-md flex items-center justify-between gap-3 ${
         isSelected ? "border-black" : "border-gray-200"
       }`}
     >

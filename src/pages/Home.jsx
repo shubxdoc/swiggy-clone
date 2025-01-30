@@ -79,7 +79,7 @@ const Home = () => {
 
   if (serviceAvailability === "Location Unserviceable") {
     return (
-      <div className="container flex flex-col items-center justify-center w-full">
+      <div className="container flex flex-col items-center justify-center h-[70vh] w-full mx-auto">
         <img
           src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_476,h_476/portal/m/location_unserviceable.png"
           alt="Unserviceable"

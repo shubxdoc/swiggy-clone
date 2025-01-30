@@ -15,20 +15,22 @@ const Navbar = () => {
   return (
     <div className="sticky top-0 z-10 flex items-center w-full shadow min-h-20 bg-neutral-50">
       <div className="container flex items-center justify-between max-w-6xl px-5 mx-auto">
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-5 md:gap-10">
           <div id="logo" className="transition duration-300 hover:scale-110">
             <Link to="/">
               <SwiggyLogo />
             </Link>
           </div>
           {location.pathname === "/cart" ? (
-            <span className="text-sm font-bold uppercase">Secure Checkout</span>
+            <span className="text-xs font-bold uppercase md:text-sm">
+              Secure Checkout
+            </span>
           ) : (
             <UserLocation />
           )}
         </div>
 
-        <ul className="flex items-center gap-5 text-base font-semibold lg:gap-10">
+        <ul className="flex items-center gap-3 text-base font-semibold lg:gap-10">
           {location.pathname === "/cart" ? (
             <>
               <Navlinks text={"Help"} Icon={IoHelpBuoyOutline} routeLink={""} />
@@ -37,18 +39,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {/* <Navlinks
-                text={"Swiggy Corporate"}
-                Icon={MdCorporateFare}
-                routeLink={""}
-                className="hidden lg:block"
-              />
-              <Navlinks
-                text={"Offers"}
-                Icon={BiSolidOffer}
-                routeLink={""}
-                className="hidden lg:block"
-              /> */}
               <Navlinks
                 text={"Search"}
                 Icon={MdOutlineSearch}
@@ -69,7 +59,7 @@ const Navbar = () => {
                         {cartData.length}
                       </span>
                     </span>
-                    <span>Cart</span>
+                    <span className="text-xs md:text-sm">Cart</span>
                   </div>
                 </Link>
               </li>
@@ -87,7 +77,7 @@ export const Navlinks = ({ text, Icon, routeLink, className }) => {
   return (
     <li className={`cursor-pointer hover:text-swiggyOrange ${className}`}>
       <Link to={routeLink}>
-        <div className="flex items-center gap-1 text-sm lg:text-base">
+        <div className="flex items-center gap-1 text-xs lg:text-base">
           <span>
             <Icon />
           </span>
