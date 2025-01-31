@@ -57,8 +57,9 @@ const RestaurantsMenu = () => {
         result?.data?.cards[3]?.card?.card?.gridElements.infoWithStyle.offers
       );
 
-      let actualMenu =
-        (result?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards).filter(
+      let actualMenu = result?.data?.cards
+        .find((data) => data?.groupedCard)
+        ?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
           (data) =>
             data?.card?.card?.itemCards?.length > 0 ||
             data?.card?.card?.categories?.length > 0 ||

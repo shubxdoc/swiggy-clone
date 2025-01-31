@@ -55,7 +55,10 @@ const Home = () => {
 
       let onlineResData =
         resOnlineCards?.gridElements?.infoWithStyle?.restaurants;
-      let onlineResHeader = resOnlineCards?.header?.title;
+      let onlineResHeader = findCardById(
+        result?.data?.cards,
+        "popular_restaurants_title"
+      )?.title;
 
       setOnYourMindData(onMindData || []);
       setOnYourMindTitle(onMindHeader || "");
