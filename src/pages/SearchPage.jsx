@@ -49,7 +49,9 @@ const SearchPage = () => {
     let pathname = `/city/${city}/${resLocation}`;
     let encodedPath = encodeURIComponent(pathname);
 
-    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=null&submitAction=ENTER&selectedPLTab=dish-add&restaurantMenuUrl=${encodedPath}-rest${resId}%3Fquery%3D${searchQuery}&restaurantIdOfAddedItem=${resId}&itemAdded=${itemId}`;
+    const baseURL = `${
+      import.meta.env.VITE_BASE_URL
+    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=null&submitAction=ENTER&selectedPLTab=dish-add&restaurantMenuUrl=${encodedPath}-rest${resId}%3Fquery%3D${searchQuery}&restaurantIdOfAddedItem=${resId}&itemAdded=${itemId}`;
     try {
       const response = await fetch(baseURL);
       const result = await response.json();
@@ -69,7 +71,9 @@ const SearchPage = () => {
   }, [isSimilarResDishes]);
 
   async function fetchDishes(retry = false) {
-    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0`;
+    const baseURL = `${
+      import.meta.env.VITE_BASE_URL
+    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0`;
 
     try {
       const response = await fetch(baseURL);
@@ -89,7 +93,9 @@ const SearchPage = () => {
   }
 
   async function fetchRestaurantsData() {
-    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0&selectedPLTab=RESTAURANT`;
+    const baseURL = `${
+      import.meta.env.VITE_BASE_URL
+    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0&selectedPLTab=RESTAURANT`;
 
     try {
       const response = await fetch(baseURL);

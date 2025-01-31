@@ -1,6 +1,8 @@
 // src/api.js
 export const fetchRestaurantsData = async (lat, lng) => {
-  const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
+  const baseURL = `${
+    import.meta.env.VITE_BASE_URL
+  }/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
 
   try {
     const response = await fetch(baseURL);
@@ -11,6 +13,14 @@ export const fetchRestaurantsData = async (lat, lng) => {
         ?.card;
     };
 
+    const topRestaurantsData =
+      findCardById(result?.data?.cards, "top_brands_for_you")?.gridElements
+        ?.infoWithStyle?.restaurants || [];
+
+    const onlineRestaurantsData =
+      findCardById(result?.data?.cards, "restaurant_grid_listing")?.gridElements
+        ?.infoWithStyle?.restaurants || [];
+
     return {
       onYourMindData:
         findCardById(result?.data?.cards, "whats_on_your_mind")?.imageGridCards
@@ -19,16 +29,17 @@ export const fetchRestaurantsData = async (lat, lng) => {
         findCardById(result?.data?.cards, "whats_on_your_mind")?.header
           ?.title || "",
 
-      topRestaurantsData:
-        findCardById(result?.data?.cards, "top_brands_for_you")?.gridElements
-          ?.infoWithStyle?.restaurants || [],
+      topRestaurantsData,
+
       topResTitle:
         findCardById(result?.data?.cards, "top_brands_for_you")?.header
           ?.title || "",
 
       restaurantsWithOnlineDeliveryData:
-        findCardById(result?.data?.cards, "restaurant_grid_listing")
-          ?.gridElements?.infoWithStyle?.restaurants || [],
+        topRestaurantsData.length > 0
+          ? topRestaurantsData
+          : onlineRestaurantsData,
+
       onlineResTitle:
         findCardById(result?.data?.cards, "popular_restaurants_title")?.title ||
         "",
@@ -42,7 +53,9 @@ export const fetchRestaurantsData = async (lat, lng) => {
 };
 
 export const fetchMenuData = async (restaurantId, lat, lng) => {
-  const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${restaurantId}&catalog_qa=undefined&submitAction=ENTER`;
+  const baseURL = `${
+    import.meta.env.VITE_BASE_URL
+  }/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${restaurantId}&catalog_qa=undefined&submitAction=ENTER`;
 
   try {
     const response = await fetch(baseURL);

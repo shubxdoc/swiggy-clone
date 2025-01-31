@@ -37,7 +37,9 @@ const UserLocation = () => {
     if (val.trim() === "") return;
 
     const res = await fetch(
-      `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/misc/place-autocomplete?input=${val}`
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/dapi/misc/place-autocomplete?input=${val}`
     );
     const result = await res.json();
     setSearchResult(result.data);
@@ -47,7 +49,9 @@ const UserLocation = () => {
     if (id.trim() === "") return;
 
     const res = await fetch(
-      `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/misc/address-recommend?place_id=${id}`
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/dapi/misc/address-recommend?place_id=${id}`
     );
     const result = await res.json();
     const { lat, lng } = result.data[0]?.geometry?.location;
