@@ -3,3 +3,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.animate {
+  animation-name: shimmer;
+  background-image: linear-gradient(
+    to right,
+    #fcfcfc,
+    #fafafa,
+    #f7f7f7,
+    #f4f4f4,
+    #f0f0f0,
+    #f1f1f1
+  );
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -1000px 0;
+  }
+
+  to {
+    /* background-color:; */
+    background-position: 1000px 0;
+  }
+}
