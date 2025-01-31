@@ -40,7 +40,7 @@ const RestaurantsMenu = () => {
       return;
     }
 
-    const baseURL = `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${
+    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${
       restaurantId || id
     }&catalog_qa=undefined&submitAction=ENTER`;
 

@@ -23,7 +23,7 @@ const Home = () => {
   const { lat, lng } = coordinates;
 
   const fetchData = async () => {
-    const baseURL = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
+    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
 
     try {
       const response = await fetch(baseURL);
