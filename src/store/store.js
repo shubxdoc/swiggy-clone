@@ -4,6 +4,7 @@ import coordinateReducer from "./coordinateSlice";
 import filterReducer from "./filterSlice";
 import authReducer from "./authSlice";
 import searchReducer from "./searchSlice";
+import restaurantReducer from "./restaurantSlice";
 
 const syncToLocalStorage = (store) => (next) => (action) => {
   const result = next(action);
@@ -34,6 +35,7 @@ export const store = configureStore({
     filterSlice: filterReducer,
     authSlice: authReducer,
     searchSlice: searchReducer,
+    restaurantSlice: restaurantReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(syncToLocalStorage), // we are adding syncToLocalStorage to default middlewares (which we got by getDefaultMiddleware) provided by redux

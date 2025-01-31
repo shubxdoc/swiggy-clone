@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   DealsForYou,
@@ -8,11 +8,14 @@ import {
 } from "../components/RestaurantMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, confirmAddToCart } from "../store/cartSlice";
+import { getMenuData } from "../store/restaurantSlice";
+import { SkeletonLoader } from "../components/Common";
 
 const RestaurantsMenu = () => {
   const { id } = useParams();
-
   const dispatch = useDispatch();
+
+  const restaurantId = id.replace(/\D/g, "");
 
   const { coordinates } = useSelector((state) => state.coordinateSlice);
   const { lat, lng } = coordinates;
@@ -28,53 +31,17 @@ const RestaurantsMenu = () => {
     dispatch(closeModal());
   };
 
-  const [menuData, setMenuData] = useState([]);
-  const [restaurantInfo, setRestaurantInfo] = useState([]);
-  const [discountData, setDiscountData] = useState([]);
+  const { menuData, restaurantInfo, discountData, menuStatus, error } =
+    useSelector((state) => state.restaurantSlice);
 
-  const fetchMenu = async () => {
-    const restaurantId = id?.split("rest")[1];
-
-    if (!restaurantId && !id) {
-      console.error("Invalid restaurant ID format.");
-      return;
-    }
-
-    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${
-      restaurantId || id
-    }&catalog_qa=undefined&submitAction=ENTER`;
-
-    try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
-
-      console.log(
-        result?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards
-      );
-
-      setRestaurantInfo(result?.data?.cards[2]?.card?.card?.info);
-      setDiscountData(
-        result?.data?.cards[3]?.card?.card?.gridElements.infoWithStyle.offers
-      );
-
-      let actualMenu = result?.data?.cards
-        .find((data) => data?.groupedCard)
-        ?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
-          (data) =>
-            data?.card?.card?.itemCards?.length > 0 ||
-            data?.card?.card?.categories?.length > 0 ||
-            data?.card?.card?.carousel?.length > 0
-        );
-
-      setMenuData(actualMenu);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  console.log(menuData);
 
   useEffect(() => {
-    fetchMenu();
-  }, [coordinates]);
+    dispatch(getMenuData({ restaurantId, lat, lng }));
+  }, [id, coordinates, dispatch]);
+
+  if (menuStatus === "loading") return <SkeletonLoader />;
+  if (menuStatus === "failed") return <p>Error: {error}</p>;
 
   return (
     <div className="container w-full max-w-3xl px-2 mx-auto my-5 space-y-10">

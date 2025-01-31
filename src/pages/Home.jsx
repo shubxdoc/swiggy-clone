@@ -1,84 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { HorizontalLine } from "../components/Common";
 import {
   OnYourMind,
   TopRestaurants,
   RestaurantsWithOnlineDelivery,
 } from "../components/Home";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getRestaurantsData } from "../store/restaurantSlice";
+import { ShimmerLoader } from "../components/Common";
 
 const Home = () => {
-  const [onYourMindData, setOnYourMindData] = useState([]);
-  const [topRestaurantsData, setTopRestaurantsData] = useState([]);
-  const [
+  const dispatch = useDispatch();
+
+  const {
+    onYourMindData,
+    topRestaurantsData,
     restaurantsWithOnlineDeliveryData,
-    setRestaurantsWithOnlineDeliveryData,
-  ] = useState([]);
-  const [onYourMindTitle, setOnYourMindTitle] = useState("");
-  const [topResTitle, setTopResTitle] = useState("");
-  const [onlineResTitle, setOnlineResTitle] = useState("");
-  const [serviceAvailability, setServiceAvailability] = useState("");
+    onYourMindTitle,
+    topResTitle,
+    onlineResTitle,
+    serviceAvailability,
+    status,
+    error,
+  } = useSelector((state) => state.restaurantSlice);
+
   const { coordinates } = useSelector((state) => state.coordinateSlice);
 
   const { lat, lng } = coordinates;
 
-  const fetchData = async () => {
-    const baseURL = `https://cors-by-codethread-for-swiggy.vercel.app/cors/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
-
-    try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
-
-      const findCardById = (cards, id) => {
-        return cards.find((resData) => resData?.card?.card?.id === id)?.card
-          ?.card;
-      };
-
-      const topBrandsCard = findCardById(
-        result?.data?.cards,
-        "top_brands_for_you"
-      );
-      const resOnlineCards = findCardById(
-        result?.data?.cards,
-        "restaurant_grid_listing"
-      );
-      const onMindCards = findCardById(
-        result?.data?.cards,
-        "whats_on_your_mind"
-      );
-
-      let onMindData = onMindCards?.imageGridCards?.info;
-      let onMindHeader = onMindCards?.header?.title;
-
-      let topResData = topBrandsCard?.gridElements?.infoWithStyle?.restaurants;
-      let topResHeader = topBrandsCard?.header?.title;
-
-      let onlineResData =
-        resOnlineCards?.gridElements?.infoWithStyle?.restaurants;
-      let onlineResHeader = findCardById(
-        result?.data?.cards,
-        "popular_restaurants_title"
-      )?.title;
-
-      setOnYourMindData(onMindData || []);
-      setOnYourMindTitle(onMindHeader || "");
-
-      setTopRestaurantsData(topResData || []);
-      setTopResTitle(topResHeader || "");
-
-      setRestaurantsWithOnlineDeliveryData(topResData || onlineResData);
-
-      setOnlineResTitle(onlineResHeader || "");
-
-      setServiceAvailability(result?.data?.cards[0]?.card?.card?.title);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+    dispatch(getRestaurantsData({ lat, lng }));
   }, [coordinates]);
+
+  if (status === "loading") return <ShimmerLoader />;
+  if (status === "failed") return <p>Error: {error}</p>;
 
   if (serviceAvailability === "Location Unserviceable") {
     return (
