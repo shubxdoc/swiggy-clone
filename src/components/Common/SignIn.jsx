@@ -1,12 +1,10 @@
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase/config";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
+import { auth, provider } from "../../firebase/config";
 import { addUserData } from "../../store/authSlice";
-import { useNavigate } from "react-router-dom";
 
 const SignIn = ({ setIsOpen }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   async function handleGoogleAuth() {
     signInWithPopup(auth, provider)
@@ -25,6 +23,7 @@ const SignIn = ({ setIsOpen }) => {
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
+        console.log(errorMessage);
       });
   }
 
