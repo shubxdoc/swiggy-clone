@@ -66,7 +66,7 @@ const Menu = ({ data, restaurantInfo }) => {
                 </>
               )}
 
-              {/* Categories Cards */}
+              {/* Categories Section */}
               {categories && (
                 <div>
                   <HorizontalLine customClass={"my-4 py-1.5 bg-gray-100"} />
@@ -98,7 +98,7 @@ const Menu = ({ data, restaurantInfo }) => {
                 </div>
               )}
 
-              {/* Normal Cards */}
+              {/* Extra Category Section*/}
               {itemCards && (
                 <>
                   <HorizontalLine customClass={"my-4 py-1.5 bg-gray-100"} />

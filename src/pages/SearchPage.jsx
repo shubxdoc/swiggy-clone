@@ -10,6 +10,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewRestaurantConfirmModal } from "../components/RestaurantMenu";
 import { closeModal, confirmAddToCart } from "../store/cartSlice";
 import { resetSimilarResDish } from "../store/searchSlice";
+import {
+  fetchDishes,
+  fetchRestaurantsSearch,
+  fetchSimilarResDishes,
+} from "../services/api";
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,79 +50,64 @@ const SearchPage = () => {
     (state) => state.searchSlice.similarResDish
   );
 
-  async function fetchSimilarResDishes() {
-    let pathname = `/city/${city}/${resLocation}`;
-    let encodedPath = encodeURIComponent(pathname);
-
-    const baseURL = `${
-      import.meta.env.VITE_BASE_URL
-    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=null&submitAction=ENTER&selectedPLTab=dish-add&restaurantMenuUrl=${encodedPath}-rest${resId}%3Fquery%3D${searchQuery}&restaurantIdOfAddedItem=${resId}&itemAdded=${itemId}`;
+  const handleFetchSimilarDishes = async () => {
     try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
+      const { selectedRestaurantDish, sameDishes } =
+        await fetchSimilarResDishes({
+          lat,
+          lng,
+          searchQuery,
+          city,
+          resLocation,
+          resId,
+          itemId,
+        });
 
-      setSelectedResDish(result?.data?.cards[1]);
-      setSameResDishes(result?.data?.cards[2]?.card?.card?.cards);
+      setSelectedResDish(selectedRestaurantDish);
+      setSameResDishes(sameDishes);
       dispatch(resetSimilarResDish());
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (isSimilarResDishes) {
-      fetchSimilarResDishes();
+      handleFetchSimilarDishes();
     }
   }, [isSimilarResDishes]);
 
-  async function fetchDishes(retry = false) {
-    const baseURL = `${
-      import.meta.env.VITE_BASE_URL
-    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0`;
+  const getDishes = async () => {
+    if (!searchQuery) return;
+    try {
+      const dishes = await fetchDishes({ searchQuery, lat, lng });
+      setDishesData(dishes);
+    } catch (error) {
+      console.log("Error fetching dishes:", error);
+    }
+  };
+
+  const getRestaurants = async () => {
+    if (!searchQuery) return;
 
     try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
-
-      const dishes =
-        result?.data?.cards[1]?.groupedCard?.cardGroupMap?.DISH?.cards || [];
-
-      if (!dishes.length && !retry) {
-        console.log("Retrying fetchDishes...");
-        return fetchDishes(true); // Retry once if response is empty
-      }
-      setDishesData(dishes.filter((data) => data?.card?.card?.info));
+      const restaurants = await fetchRestaurantsSearch({
+        searchQuery,
+        lat,
+        lng,
+      });
+      setRestaurantsData(restaurants);
     } catch (error) {
-      console.log("error", error);
+      console.log("Error fetching restaurants:", error);
     }
-  }
-
-  async function fetchRestaurantsData() {
-    const baseURL = `${
-      import.meta.env.VITE_BASE_URL
-    }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${searchQuery}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0&selectedPLTab=RESTAURANT`;
-
-    try {
-      const response = await fetch(baseURL);
-      const result = await response.json();
-
-      setRestaurantsData(
-        (
-          result?.data?.cards[0]?.groupedCard?.cardGroupMap?.RESTAURANT
-            ?.cards || []
-        ).filter((data) => data?.card?.card?.info)
-      );
-    } catch (error) {
-      console.log("error", error);
-    }
-  }
+  };
 
   useEffect(() => {
     if (searchQuery.trim() == "") return;
 
     setSelectedResDish(null);
-    fetchDishes();
-    fetchRestaurantsData();
+    getDishes();
+    getRestaurants();
   }, [searchQuery]);
 
   return (
@@ -183,6 +173,7 @@ const SearchPage = () => {
                     const { info, hideRestaurantDetails } = item?.card;
                     return (
                       <SearchDishesCard
+                        key={info?.id}
                         info={info}
                         restaurant={
                           selectedResDish?.card?.card?.restaurant?.info
@@ -199,6 +190,7 @@ const SearchPage = () => {
               const { ctaWithParams, info } = item?.card?.card;
               return (
                 <SearchRestaurantCard
+                  key={info?.id}
                   info={info}
                   ctaWithParams={ctaWithParams.params}
                 />
@@ -208,7 +200,11 @@ const SearchPage = () => {
             dishesData.map((item) => {
               const { info, restaurant } = item?.card?.card;
               return (
-                <SearchDishesCard info={info} restaurant={restaurant.info} />
+                <SearchDishesCard
+                  key={info?.id}
+                  info={info}
+                  restaurant={restaurant.info}
+                />
               );
             })
           )}

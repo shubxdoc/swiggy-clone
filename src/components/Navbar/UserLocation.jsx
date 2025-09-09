@@ -4,6 +4,10 @@ import { IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { setCoordinates } from "../../store/coordinateSlice.js";
+import {
+  fetchLatAndLng,
+  fetchLocationSearchResults,
+} from "../../services/api.js";
 
 const UserLocation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,27 +40,15 @@ const UserLocation = () => {
   async function handleSearchResult(val) {
     if (val.trim() === "") return;
 
-    const res = await fetch(
-      `${
-        import.meta.env.VITE_BASE_URL
-      }/dapi/misc/place-autocomplete?input=${val}`
-    );
-    const result = await res.json();
+    const result = await fetchLocationSearchResults(val);
+
     setSearchResult(result.data);
   }
 
-  async function fetchLatAndLng(id) {
+  async function handleFetchLatAndLng(id) {
     if (id.trim() === "") return;
 
-    const res = await fetch(
-      `${
-        import.meta.env.VITE_BASE_URL
-      }/dapi/misc/address-recommend?place_id=${id}`
-    );
-    const result = await res.json();
-    const { lat, lng } = result.data[0]?.geometry?.location;
-
-    console.log(lat, lng);
+    const { formattedAddress, lat, lng } = await fetchLatAndLng(id);
 
     dispatch(
       setCoordinates({
@@ -64,7 +56,7 @@ const UserLocation = () => {
         lng: lng,
       })
     );
-    setAddress(result.data[0]?.formatted_address);
+    setAddress(formattedAddress);
     handleClose();
   }
 
@@ -105,7 +97,8 @@ const UserLocation = () => {
             <ul>
               {searchResult.map((item) => (
                 <li
-                  onClick={() => fetchLatAndLng(item.place_id)}
+                  key={item.place_id}
+                  onClick={() => handleFetchLatAndLng(item.place_id)}
                   className="flex gap-3 px-2 border-b border-gray-300 border-dashed cursor-pointer py-7"
                 >
                   <div className="mt-1">

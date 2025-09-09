@@ -1,4 +1,29 @@
-// src/api.js
+export async function fetchLatAndLng(id) {
+  const res = await fetch(
+    `${
+      import.meta.env.VITE_BASE_URL
+    }/dapi/misc/address-recommend?place_id=${id}`
+  );
+  const result = await res.json();
+  const { lat, lng } = result.data[0]?.geometry?.location;
+  const formattedAddress = result.data[0]?.formatted_address;
+
+  return {
+    lat,
+    lng,
+    formattedAddress,
+  };
+}
+
+export async function fetchLocationSearchResults(val) {
+  const res = await fetch(
+    `${import.meta.env.VITE_BASE_URL}/dapi/misc/place-autocomplete?input=${val}`
+  );
+  const result = await res.json();
+
+  return result;
+}
+
 export const fetchRestaurantsData = async (lat, lng) => {
   const baseURL = `${
     import.meta.env.VITE_BASE_URL
@@ -81,4 +106,70 @@ export const fetchMenuData = async (restaurantId, lat, lng) => {
     console.error("Error fetching menu data:", error);
     throw error;
   }
+};
+
+export const searchURLBuilder = (val, query, lat, lng) =>
+  `${
+    import.meta.env.VITE_BASE_URL
+  }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${encodeURIComponent(
+    query || ""
+  )}&trackingId=4836a39e-ca12-654d-dc3b-2af9d645f8d7&submitAction=ENTER&queryUniqueId=7abdce29-5ac6-7673-9156-3022b0e032f0${
+    val == "dishes" ? "&selectedPLTab=DISH" : "&selectedPLTab=RESTAURANT"
+  }`;
+
+export const fetchSimilarResDishes = async ({
+  lat,
+  lng,
+  searchQuery,
+  city,
+  resLocation,
+  resId,
+  itemId,
+}) => {
+  const pathname = `/city/${city}/${resLocation}`;
+  const encodedPath = encodeURIComponent(pathname);
+
+  const url = `${
+    import.meta.env.VITE_BASE_URL
+  }/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${encodeURIComponent(
+    searchQuery
+  )}&trackingId=null&submitAction=ENTER&selectedPLTab=dish-add&restaurantMenuUrl=${encodedPath}-rest${resId}%3Fquery%3D${encodeURIComponent(
+    searchQuery
+  )}&restaurantIdOfAddedItem=${resId}&itemAdded=${itemId}`;
+
+  const response = await fetch(url);
+  const result = await response.json();
+
+  return {
+    selectedRestaurantDish: result?.data?.cards[1] || null,
+    sameDishes: result?.data?.cards[2]?.card?.card?.cards || [],
+  };
+};
+
+export const fetchDishes = async ({ searchQuery, lat, lng }, retry = false) => {
+  const baseURL = searchURLBuilder("dishes", searchQuery, lat, lng);
+
+  const response = await fetch(baseURL);
+  const result = await response.json();
+
+  const dishes =
+    result?.data?.cards[0]?.groupedCard?.cardGroupMap?.DISH?.cards || [];
+
+  if (!dishes.length && !retry) {
+    return fetchDishes({ searchQuery, lat, lng }, true); // Retry once
+  }
+
+  return dishes.filter((data) => data?.card?.card?.info);
+};
+
+export const fetchRestaurantsSearch = async ({ searchQuery, lat, lng }) => {
+  const baseURL = searchURLBuilder("restaurant", searchQuery, lat, lng);
+
+  const response = await fetch(baseURL);
+  const result = await response.json();
+
+  const restaurants =
+    result?.data?.cards[0]?.groupedCard?.cardGroupMap?.RESTAURANT?.cards || [];
+
+  return restaurants.filter((data) => data?.card?.card?.info);
 };
